@@ -1,6 +1,7 @@
 """Models for Cupcake app."""
-DEFAULT_CUPCAKE_IMG = 'https://tinyurl.com/demo-cupcake'
 from flask_sqlalchemy import SQLAlchemy
+
+DEFAULT_CUPCAKE_IMG = 'https://tinyurl.com/demo-cupcake'
 
 db = SQLAlchemy()
 
@@ -14,6 +15,7 @@ def connect_db(app):
     db.app = app
     db.init_app(app)
 
+
 class Cupcake(db.Model):
     """Cupcake."""
 
@@ -26,7 +28,7 @@ class Cupcake(db.Model):
                     nullable=False)               
     size = db.Column(db.String(50),
                     nullable=False)
-    
+
     rating = db.Column(db.Integer,
                     nullable=False)
     image = db.Column(db.Text, 

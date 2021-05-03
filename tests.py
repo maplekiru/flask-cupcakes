@@ -36,7 +36,7 @@ class CupcakeViewsTestCase(TestCase):
 
         Cupcake.query.delete()
 
-        # "**" means "pass this dictionary as individual named params"
+        # "**" means "pass this dictionary as individual named params", spreads them out
         cupcake = Cupcake(**CUPCAKE_DATA)
         db.session.add(cupcake)
         db.session.commit()
@@ -49,6 +49,7 @@ class CupcakeViewsTestCase(TestCase):
         db.session.rollback()
 
     def test_list_cupcakes(self):
+        """Test listing all cupcakes"""
         with app.test_client() as client:
             resp = client.get("/api/cupcakes")
 
@@ -68,6 +69,7 @@ class CupcakeViewsTestCase(TestCase):
             })
 
     def test_get_cupcake(self):
+        """Test getting information for a particular cupcake"""
         with app.test_client() as client:
             url = f"/api/cupcakes/{self.cupcake.id}"
             resp = client.get(url)
@@ -85,6 +87,7 @@ class CupcakeViewsTestCase(TestCase):
             })
 
     def test_create_cupcake(self):
+        """Test creating a new cupcake"""
         with app.test_client() as client:
             url = "/api/cupcakes"
             resp = client.post(url, json=CUPCAKE_DATA_2)
@@ -107,3 +110,39 @@ class CupcakeViewsTestCase(TestCase):
             })
 
             self.assertEqual(Cupcake.query.count(), 2)
+
+    def test_update_cupcake(self):
+        """Test updating a particular cupcake"""
+        with app.test_client() as client:
+            url = f"/api/cupcakes/{self.cupcake.id}"
+            resp = client.patch(url, json={
+                "flavor": "berry_test_flavor",
+                "image": "https://tinyurl.com/demo-cupcake",
+                "rating": 7,
+                "size": "test_size"
+            })
+
+            self.assertEqual(resp.status_code, 200)
+            data = resp.json
+
+            self.assertEqual(data, {
+                "cupcake": {
+                    "flavor": "berry_test_flavor",
+                    "size": "test_size",
+                    "id": self.cupcake.id,
+                    "rating": 7,
+                    "image": "https://tinyurl.com/demo-cupcake"
+                }
+            })
+
+    def test_delete_cupcake(self):
+        """Test deleting a particular cupcake"""
+        with app.test_client() as client:
+            url = f"/api/cupcakes/{self.cupcake.id}"
+            resp = client.delete(url)
+
+            self.assertEqual(resp.status_code, 200)
+            data = resp.json
+
+            self.assertEqual(data, {"message": "Deleted"})
+            self.assertEqual(Cupcake.query.count(), 0)
