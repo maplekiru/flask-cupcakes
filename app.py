@@ -1,6 +1,6 @@
 """Flask app for Cupcakes"""
 
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, render_template
 
 from flask_debugtoolbar import DebugToolbarExtension
 
@@ -16,6 +16,12 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 connect_db(app)
 db.create_all()
+
+
+@app.route('/')
+def display_homepage():
+
+    return render_template('homepage.html')
 
 
 @app.route('/api/cupcakes')
